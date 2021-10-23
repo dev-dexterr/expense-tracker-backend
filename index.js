@@ -5,6 +5,8 @@ import {verifyToken} from "./utils/middleware.js"
 
 //Routes
 import loginRoute from "./routes/auth.js";
+import transactionRoute from "./routes/transaction.js";
+import userRoute from "./routes/user.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -34,6 +36,8 @@ const startServer = () => {
   });
 
   app.use("/", loginRoute);
+  app.use("/user", verifyToken, userRoute);
+  app.use("/transaction", verifyToken,transactionRoute);
 
   app.listen(port, () => {
     console.log(`Backend Server is Running at http://localhost:${port}`);

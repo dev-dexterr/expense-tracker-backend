@@ -1,10 +1,11 @@
 import express from "express"
-import { upsertUser, deleteUser } from "../controllers/UserController";
+import { editUser, deleteUser, listUser } from "../controllers/UserController.js";
 
 const router = express.Router();
 
-//Add User / Edit User
-router.post("/upsert", (req,res)=> upsertUser(req,res))
+router.post("/list", (req,res)=> listUser(req,res))
+//Edit User
+router.post("/edit", (req,res)=> editUser(req,res))
 //Delete User 
 router.delete("/delete/:id", (req,res)=> deleteUser(req,res))
 

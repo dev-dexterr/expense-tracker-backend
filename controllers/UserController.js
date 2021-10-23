@@ -4,6 +4,16 @@ import { validatePwd, hashPwd } from "../utils/middleware.js";
 import * as msg from "../utils/message.js";
 import { meta } from "../utils/enum.js";
 
+
+export async function listUser(req, res) {
+  try {
+    const user = await UserProfile.find();
+    res.status(200).json({ meta: meta.OK, datas: user })
+  } catch (err) {
+    res.status(400).json({ meta: meta.ERROR, message: err.message })
+  }
+}
+
 //Register
 export async function register(req, res) {
   const user = new UserProfile({
@@ -14,10 +24,10 @@ export async function register(req, res) {
   user
     .save()
     .then((data) => {
-      res.status(200).json({ meta: meta.OK,datas: data });
+      res.status(200).json({ meta: meta.OK, datas: data });
     })
     .catch((err) => {
-      res.status(500).json({ meta: meta.ERROR,message: err.message });
+      res.status(500).json({ meta: meta.ERROR, message: err.message });
     });
 }
 
@@ -37,7 +47,7 @@ export async function login(req, res) {
         { expiresIn: "7d" },
         (err, token) => {
           result.token = token;
-          return res.status(200).json({ meta: meta.OK , data: result });
+          return res.status(200).json({ meta: meta.OK, data: result });
         }
       );
     } else {
@@ -48,71 +58,19 @@ export async function login(req, res) {
   }
 }
 
-export async function upsertUser(req, res) {
+export async function editUser(req, res) {
   try {
-    if (req.body.id === undefined || req.body.id == "") {
-      delete req.body.id;
-
-      const user = new UserProfile(req.body);
-      user
-        .save()
-        .then((data) => {
-          res
-            .status(200)
-            .json({ meta: meta.OK, message: msg.generalMsg.record_add });
-        })
-        .catch((err) => {
-          res.status(404).json({ meta: meta.ERROR, message: err.message });
-        });
-    } else {
-      await UserProfile.findByIdAndUpdate(
-        { _id: req.body.id },
-        req.body,
-        (err, data) => {
-          if (err) {
-            res.status(404).json({ meta: meta.ERROR, message: err.message });
-            return true;
-          }
-
-          if (data != null) {
-            res
-              .status(200)
-              .json({ meta: meta.OK, message: msg.generalMsg.record_update });
-          } else {
-            res.status(404).json({
-              meta: meta.NOTEXIST,
-              message: msg.generalMsg.record_notexist,
-            });
-          }
-        }
-      );
-    }
+    await UserProfile.updateOne({ _id: req.params.id }, { username: req.body.username, password: await hashPwd(req.body.password) });
+    res.status(200).json({ meta: meta.OK, message: msg.generalMsg.record_update });
   } catch (err) {
-    res.status(404).json({ meta: meta.ERROR, message: err.message });
+    res.status(400).json({ meta: meta.ERROR, message: err.message });
   }
 }
 
 export async function deleteUser(req, res) {
   try {
-    UserProfile.findByIdAndDelete(req.params.id, (err, data) => {
-      if (err) {
-        res.status(404).json({ meta: meta.ERROR, message: err.message });
-        return true;
-      }
-
-      if (data != null) {
-        res
-          .status(200)
-          .json({ meta: meta.OK, message: msg.generalMsg.record_delete });
-      } else {
-        res
-          .status(404)
-          .json({
-            meta: meta.NOTEXIST,
-            message: msg.generalMsg.record_notexist,
-          });
-      }
-    });
+    await UserProfile.remove({ _id: req.params.id });
+    res.status(200).json({ meta: meta.OK, message: msg.generalMsg.record_delete });
   } catch (err) {
     res.status(404).json({ meta: meta.ERROR, message: err.message });
   }
