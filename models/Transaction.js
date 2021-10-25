@@ -22,8 +22,8 @@ const TransactionSchema = mongoose.Schema({
         type: Number,
         requried: true
     },
-    iconname:{
-        type: String,
+    iconName:{
+        type: Number,
         requried: true
     },
     remark: {

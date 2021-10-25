@@ -8,7 +8,8 @@ export async function listTransaction(req, res) {
         if (req.body.limit === undefined) {
             req.body.limit = 10;
         }
-        let transaction = await Transaction.find().populate("userprofile").limit(req.body.limit)
+        console.log(req.body.userprofile);
+        let transaction = await Transaction.find({userprofile: req.body.userprofile}).limit(req.body.limit)
         transaction = transaction.map((p) => {
             return {
                 id: p._id,
@@ -17,7 +18,7 @@ export async function listTransaction(req, res) {
                 datetime: p.datetime,
                 type: p.type,
                 amount: p.amount,
-                iconname: p.iconname,
+                iconName: p.iconName,
                 remark: p.remark
             }
         })
