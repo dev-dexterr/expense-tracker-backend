@@ -8,7 +8,6 @@ export async function listTransaction(req, res) {
         if (req.body.limit === undefined) {
             req.body.limit = 10;
         }
-        console.log(req.body.userprofile);
         let transaction = await Transaction.find({userprofile: req.body.userprofile}).limit(req.body.limit)
         transaction = transaction.map((p) => {
             return {
@@ -58,16 +57,15 @@ export async function addTransaction(req, res) {
 
 export async function editTransaction(req, res) {
     try {
-        await Transaction.findByIdAndUpdate({ _id: req.body.id }, req.body, (err, data) => {
-            if (err) {
-                res.status(404).json({ meta: meta.ERROR, message: err.message });
+        Transaction.findByIdAndUpdate({ _id: req.body.id }, {amount: req.body.amount, userprofile: req.body.userprofile, remark: req.body.remark, datetime: req.body.date, type: req.body.type, name: req.body.name, iconName: req.body.iconName}).exec((err,data) => {    
+            if(err){
+                res.status(500).json({meta: meta.ERROR, message: err.message});
                 return true;
             }
-
-            if (data != null) {
+            if(data != null){
                 res.status(200).json({ meta: meta.OK, message: msg.generalMsg.record_update });
-            } else {
-                res.status(200).json({ meta: meta.NOTEXIST, message: msg.generalMsg.record_notexist });
+            }else{
+                res.status(200).json({meta: meta.ERROR, message: message.record_notexist});
             }
         })
     } catch (err) {

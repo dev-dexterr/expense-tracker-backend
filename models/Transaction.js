@@ -19,7 +19,7 @@ const TransactionSchema = mongoose.Schema({
         requried: true
     },
     amount:{
-        type: Number,
+        type: String,
         requried: true
     },
     iconName:{
