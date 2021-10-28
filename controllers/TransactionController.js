@@ -75,7 +75,7 @@ export async function editTransaction(req, res) {
 
 export async function deleteTransaction(req, res) {
     try {
-        await Transaction.remove({_id: req.params.id}).exec((err, data) => {
+        await Transaction.findByIdAndDelete({_id: req.params.id}).exec((err, data) => {
             if (err) {
                 res.status(404).json({ meta: meta.ERROR, message: err.message });
                 return true
