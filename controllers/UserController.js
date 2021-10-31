@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import UserProfile from "../models/User.js";
+import Transaction from "../models/Transaction.js";
 import { validatePwd, hashPwd } from "../utils/middleware.js";
 import * as msg from "../utils/message.js";
 import { meta } from "../utils/enum.js";
@@ -87,3 +88,14 @@ export async function deleteUser(req, res) {
 //       res.status(400).json({meta: meta.ERROR, message: err.message})
 //   }
 // }
+
+export async function getUserInfo(req,res){
+  try{
+    const user = req.user
+    let transaction = await Transaction.find({userprofile: user.login})
+    user.transaction = transaction;
+    res.status(200).json({meta: meta.OK , user_info: user});
+  }catch(err){
+    res.status(400).json({meta: meta.ERROR, message: err.message});
+  }
+}

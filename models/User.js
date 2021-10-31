@@ -21,6 +21,12 @@ const UserProfileSchema = mongoose.Schema(
   },
 );
 
+// UserProfileSchema.methods.fillUserInfo = (obj) => {
+//   return{
+
+//   }
+// }
+
 UserProfileSchema.methods.payload = async(obj) => {
   return{
     login: obj._id,

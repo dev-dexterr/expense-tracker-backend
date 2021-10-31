@@ -5,9 +5,10 @@ import { meta } from "../utils/enum.js";
 
 export async function listTransaction(req, res) {
     try {
-        if (req.body.limit === undefined) {
+        if (req.body.limit == undefined) {
             req.body.limit = 10;
         }
+        
         let transaction = await Transaction.find({userprofile: req.body.userprofile}).limit(req.body.limit)
         transaction = transaction.map((p) => {
             return {
