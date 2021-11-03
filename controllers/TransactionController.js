@@ -9,7 +9,7 @@ export async function listTransaction(req, res) {
             req.body.limit = 10;
         }
         
-        let transaction = await Transaction.find({userprofile: req.body.userprofile}).limit(req.body.limit)
+        let transaction = await Transaction.find({userprofile: req.body.userprofile}).sort([["_id", -1]]).limit(req.body.limit)
         transaction = transaction.map((p) => {
             return {
                 id: p._id,
