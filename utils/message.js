@@ -17,5 +17,8 @@ export const errorMsg = {
     unauthorize: "Unauthorized",
     in_used: "Cannot delete, current record is in used.",
     id_require: "Missing ID",
-    not_found: " not found."
+    not_found: " not found.",
+    pwdNotMatch: "Password Not Match",
+    wrongpwd: "Wrong Password",
+    user_not_found: "User Not Found"
 }

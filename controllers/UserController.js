@@ -61,7 +61,10 @@ export async function login(req, res) {
 
 export async function editUser(req, res) {
   try {
-    await UserProfile.updateOne({ _id: req.params.id }, { username: req.body.username, password: await hashPwd(req.body.password) });
+    if(!req.body.userprofile){
+      res.status(200).json({meta:meta.ERROR, message: msg.errorMsg.id_require})
+    }
+    await UserProfile.updateOne({ _id: req.body.userprofile },{username: req.body.username , email: req.body.email})
     res.status(200).json({ meta: meta.OK, message: msg.generalMsg.record_update });
   } catch (err) {
     res.status(400).json({ meta: meta.ERROR, message: err.message });
@@ -77,17 +80,32 @@ export async function deleteUser(req, res) {
   }
 }
 
-// export async function resetPwd(req,res){
-//   try{
-//     if(!req.body.id){
-//       res.status(200).json({meta:meta.ERROR, message: msg.errorMsg.id_require})
-//     }
+export async function resetPwd(req,res){
+  try{
+    const user = await UserProfile.findOne({ _id: req.body.userprofile });
+    if(!req.body.userprofile){
+      res.status(200).json({meta:meta.ERROR, message: msg.errorMsg.id_require})
+    }
 
-//     UserProfile.findOneAndUpdate({username: req.body.username , password: req.body.password})
-//   }catch(err){
-//       res.status(400).json({meta: meta.ERROR, message: err.message})
-//   }
-// }
+    if(req.body.newPassword != req.body.confirmPassword){
+      res.status(200).json({meta: meta.ERROR, message: msg.errorMsg.pwdNotMatch})
+    }
+
+    if(user != null){
+      const checkedPwd = await validatePwd(req.body.oldPassword, user.password);
+      if(checkedPwd){
+        await UserProfile.updateOne({ _id: req.body.userprofile },{ password: await hashPwd(req.body.newPassword) })
+        res.status(200).json({ meta: meta.OK, message: msg.generalMsg.record_update });
+      }else{
+        res.status(200).json({meta: meta.ERROR, message: msg.errorMsg.wrongpwd})
+      }
+    }else{
+        res.status(200).json({meta: meta.ERROR, message: msg.errorMsg.user_not_found})
+    }
+  }catch(err){
+      res.status(400).json({meta: meta.ERROR, message: err.message})
+  }
+}
 
 export async function getUserInfo(req,res){
   try{
