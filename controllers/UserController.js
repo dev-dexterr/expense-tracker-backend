@@ -73,7 +73,22 @@ export async function editUser(req, res) {
 
 export async function deleteUser(req, res) {
   try {
-    await UserProfile.remove({ _id: req.params.id });
+
+    UserProfile.findByIdAndDelete(req.params.id).exec(async(err,data)=> {
+      if(err){
+        res.status(200).json({meta: meta.ERROR, message: err.message});
+        return;
+      }
+
+      if(data == null){
+        res.status(200).json({meta: meta.ERROR, message: msg.generalMsg.record_notexist});
+        return;
+      }
+    })
+
+    const transaction = await Transaction.find({userprofile: req.params.id})
+    transaction.forEach(async (t) => await Transaction.findByIdAndDelete(t._id))
+  
     res.status(200).json({ meta: meta.OK, message: msg.generalMsg.record_delete });
   } catch (err) {
     res.status(404).json({ meta: meta.ERROR, message: err.message });
